@@ -1,12 +1,23 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { AppModule } from './app/app.module';
+import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { RouterModule, Routes } from '@angular/router';
+import { AppComponent } from './app/app.component';
+import { DefaultComponent } from './app/defaults/defaults.component';
+import { PerfComponent } from './app/perf/perf.component';
 import { environment } from './environments/environment';
+
+const routes: Routes = [
+  {path:'', pathMatch:'full', redirectTo:'perf'},
+  {path:'default', component: DefaultComponent},
+  {path:'perf', component: PerfComponent},
+ // {path:'details/:index', component: PerfViewComponent}    
+  {path:'details/:index', loadComponent:() => 
+     import('./app/perf-view.component').then(m => m.PerfViewComponent)}
+];
 
 if (environment.production) {
   enableProdMode();
 }
-
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(AppComponent, {providers:[ importProvidersFrom(RouterModule.forRoot(routes))]})
+// platformBrowserDynamic().bootstrapModule(AppModule)
+// .catch(err => console.error(err));
